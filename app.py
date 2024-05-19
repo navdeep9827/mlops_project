@@ -5,6 +5,7 @@ import base64
 from io import BytesIO
 from PIL import Image
 import cv2
+import os
 from model2 import ResNet9, to_device, get_default_device
 
 app = Flask(__name__)
