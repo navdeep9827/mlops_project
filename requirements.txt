@@ -1,0 +1,10 @@
+Flask
+requests
+opencv-python-headless
+numpy
+Pillow
+streamlit
+torch
+torchvision
+matplotlib
+
