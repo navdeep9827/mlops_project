@@ -7,4 +7,6 @@ streamlit
 torch
 torchvision
 matplotlib
+joblib
+
 
