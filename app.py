@@ -24,6 +24,7 @@ index_to_char.update({26 + i: str(i + 1) for i in range(9)})  # 1-9
 model = ResNet9(3, num_classes)  # Initialize the model structure
 model.load_state_dict(torch.load('ISN-2-custom-resnet.pth', map_location=device))
 model = to_device(model, device)
+model.eval()  # Set the model to evaluation mode
 
 def preprocess_image(image_data):
     # Decoding the base64 image
@@ -44,9 +45,10 @@ def predict():
     data = request.get_json()
     image_data = data['data']
     image = preprocess_image(image_data)
-    prediction = model(image)
-    _, preds = torch.max(prediction, dim=1)
-    pred_char = index_to_char[preds.item()]  # Map the prediction to the corresponding character
+    with torch.no_grad():  # Disable gradient calculation
+        prediction = model(image)
+        _, preds = torch.max(prediction, dim=1)
+        pred_char = index_to_char[preds.item()]  # Map the prediction to the corresponding character
     return jsonify({'prediction': pred_char})
 
 if __name__ == '__main__':
