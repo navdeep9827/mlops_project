@@ -5,7 +5,6 @@ import base64
 from io import BytesIO
 from PIL import Image
 import cv2
-import os
 from model2 import ResNet9, to_device, get_default_device
 
 app = Flask(__name__)
@@ -24,7 +23,6 @@ index_to_char.update({26 + i: str(i + 1) for i in range(9)})  # 1-9
 model = ResNet9(3, num_classes)  # Initialize the model structure
 model.load_state_dict(torch.load('ISN-2-custom-resnet.pth', map_location=device))
 model = to_device(model, device)
-model.eval()  # Set the model to evaluation mode
 
 def preprocess_image(image_data):
     # Decoding the base64 image
@@ -45,12 +43,10 @@ def predict():
     data = request.get_json()
     image_data = data['data']
     image = preprocess_image(image_data)
-    with torch.no_grad():  # Disable gradient calculation
-        prediction = model(image)
-        _, preds = torch.max(prediction, dim=1)
-        pred_char = index_to_char[preds.item()]  # Map the prediction to the corresponding character
+    prediction = model(image)
+    _, preds = torch.max(prediction, dim=1)
+    pred_char = index_to_char[preds.item()]  # Map the prediction to the corresponding character
     return jsonify({'prediction': pred_char})
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(debug=True)
